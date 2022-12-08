@@ -73,7 +73,7 @@ public class LineDrawer : MonoBehaviour
         if(Vector3.Distance(_lineRenderer.GetPosition(_lineRenderer.positionCount - 1), _lineRenderer.GetPosition(0)) < _maxDistanseForLoop)
         {
             _lineRenderer.loop = true;
-            _lineRenderer.Simplify(0.3f);
+           // _lineRenderer.Simplify(0.3f);
             DrawedLoop?.Invoke();
             return true;
         }
