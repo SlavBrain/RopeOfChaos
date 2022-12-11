@@ -25,23 +25,23 @@ public class Rope : MonoBehaviour
 
         for (int i = 1; i < dots.Length; i++)
         {
-            RopeSegment newSegment = Instantiate(_ropeTemplate, transform).AddComponent<RopeSegment>();            
+            RopeSegment newSegment = Instantiate(_ropeTemplate,dots[i],Quaternion.identity, transform).AddComponent<RopeSegment>();
             _segments.Add(newSegment);
-            newSegment.Init(dots[i], _segments[i - 1], _thickness,this);
+            newSegment.Init( _segments[i - 1], dots[i], _thickness,this);
         }
 
 
-        firstNewSegment.Init(dots[0], _segments[_segments.Count - 1], _thickness,this);
+        firstNewSegment.Init( _segments[_segments.Count - 1], dots[0], _thickness,this);
     }
 
     public void SegmentDivision(RopeSegment oldSegment)
     {
-        Vector3 breakPoint = (oldSegment.StartPoint + oldSegment.PreviousSegment.StartPoint) / 2;
-        RopeSegment newSegment = AddNewSegment();
-        newSegment.Init(breakPoint, oldSegment.PreviousSegment, _thickness,this);
-        oldSegment.Init(oldSegment.StartPoint, newSegment, _thickness,this);
+        //Vector3 breakPoint = (oldSegment.StartPoint + oldSegment.EndPoint) / 2;
+        //RopeSegment newSegment = AddNewSegment();
+        //newSegment.Init( oldSegment.PreviousSegment, breakPoint, _thickness,this);
+        //oldSegment.Init( newSegment, oldSegment.StartPoint, _thickness,this);
 
-        Debug.Log("division");
+        //Debug.Log("division");
     }
 
     public void DeleteSegment(RopeSegment segment)
