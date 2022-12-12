@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class RopeSegment : MonoBehaviour
 {
-    [SerializeField] private const float _minLenght = 0.4f;
-    [SerializeField] private float _decreasingSpeed = 1f;
+    [SerializeField] private const float _minLenght = 0.2f;
+    [SerializeField] private float _decreasingSpeed = 0.1f;
     [SerializeField] private Vector3 _startPointCoordinate;
     [SerializeField] private EndSegmentDot _endPoint;
     [SerializeField] private RopeSegment _nextSegment;
@@ -78,8 +78,11 @@ public class RopeSegment : MonoBehaviour
 
     private void TouchingStateUpdate()
     {
-        //DecreaseToStartPoint();
-
+        DecreaseToStartPoint();
+        if (_lenght > _minLenght)
+        {
+            BarrierTouched?.Invoke(this);
+        }
     }
 
     private void LockAroundStateUpdate()
@@ -112,7 +115,7 @@ public class RopeSegment : MonoBehaviour
     private void FreeStateUpdate()
     {
         //decrease start=>end 
-        DecreaseToStartPoint();
+        DecreaseToEndPoint();
         //position start=_prev.End
         SetPosition();
         //Rotate around Start  lookat end
@@ -124,7 +127,8 @@ public class RopeSegment : MonoBehaviour
         _thickness = thickness;
         ChangeNextSegment(nextSegment);
         transform.Rotate(90, 0, 0);
-        //BarrierTouched += rope.SegmentDivision;
+        ReCalculateLenght();
+        BarrierTouched += rope.SegmentDivision;
         //ReachedDeleatingState += rope.DeleteSegment;
     }
 

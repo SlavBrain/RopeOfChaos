@@ -36,12 +36,12 @@ public class Rope : MonoBehaviour
 
     public void SegmentDivision(RopeSegment oldSegment)
     {
-        //Vector3 breakPoint = (oldSegment.StartPoint + oldSegment.EndPoint) / 2;
-        //RopeSegment newSegment = AddNewSegment();
-        //newSegment.Init( oldSegment.PreviousSegment, breakPoint, _thickness,this);
-        //oldSegment.Init( newSegment, oldSegment.StartPoint, _thickness,this);
+        Vector3 breakPoint = (oldSegment.transform.position + oldSegment.EndPoint.transform.position) / 2;
+        RopeSegment newSegment = AddNewSegment();
+        newSegment.Init( oldSegment.NextSegment, _thickness,this);
+        oldSegment.Init( newSegment, _thickness,this);
 
-        //Debug.Log("division");
+        Debug.Log("division");
     }
 
     public void DeleteSegment(RopeSegment segment)
