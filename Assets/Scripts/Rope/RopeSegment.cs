@@ -3,25 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(FixedJoint))]
 public class RopeSegment : MonoBehaviour
 {
     [SerializeField] private const float _minLenght = 0.1f;
     [SerializeField] private Vector3 _startPointCoordinate;
-    [SerializeField] private StartSegmentDot _startPoint;
-    [SerializeField] private readonly EndSegmentDot _endPoint;
+    [SerializeField] private EndSegmentDot _endPoint;
     [SerializeField] private RopeSegment _nextSegment;
     [SerializeField] private RopeSegment _previousSegment;
     [SerializeField] private float _lenght;
     [SerializeField] private float _thickness;
-    [SerializeField] private bool _isBarrierTouch = false;
-    [SerializeField] private bool _startPointLock = false;
-    [SerializeField] private bool _endPointLock = false;
     [SerializeField] private float _angle;
 
-    private Rigidbody _rigidbody;
-    private FixedJoint _fixedJoint;
+    [SerializeField] private bool _isBarrierTouch = false;
+    [SerializeField] private bool _isStartPointLock = false;
+    [SerializeField] private bool _isEndPointLock = false;
+    [SerializeField] private bool _isNeibourSegmentOneSideLock = false;
 
     public event Action<RopeSegment> BarrierTouched;
     public event Action<RopeSegment> PreviousSegmentChanged;
@@ -30,28 +26,84 @@ public class RopeSegment : MonoBehaviour
 
     public RopeSegment NextSegment => _nextSegment;
 
+    public Vector3 StartPointCoordinate => _startPointCoordinate;
+
     public bool IsBarrierTouch => _isBarrierTouch;
+    public bool IsEndPointLock => _isEndPointLock;
+    public bool IsStartPointLock => _isStartPointLock;
 
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _fixedJoint = GetComponent<FixedJoint>();
-        _startPoint = GetComponentInChildren<StartSegmentDot>();
         _endPoint = GetComponentInChildren<EndSegmentDot>();
     }
 
     private void Update()
     {
-        //CheckNeiboursSegments();
+        if (_isBarrierTouch)
+        {
+            TouchingStateUpdate();
+        }
+        else if (_isStartPointLock || _isEndPointLock)
+        {
+            if (_isStartPointLock)
+            {
+                if (_isEndPointLock)
+                {
+                    LockAroundStateUpdate();
+                }
+                else
+                {
+                    StartPointLockStateUpdate();
+                }
+            }
+            else
+            {
+                EndPointLockStateUpdate();
+            }
+        }
+        else if (_nextSegment.IsEndPointLock || _previousSegment.IsStartPointLock)
+        {
+            LockOneSideNeibourSegmentStateUpdate();
+        }
+        else
+        {
+            FreeStateUpdate();
+        }
+    }
 
-        //if (!_isBarrierTouch)
-        //{
-        //    Decrease();
-        //    
+    private void TouchingStateUpdate()
+    {
+        //Divine and position Normal barrier
+    }
 
-        //}
+    private void LockAroundStateUpdate()
+    {
+        //nothing 
+    }
 
-        UpdateState();
+    private void StartPointLockStateUpdate()
+    {
+        //decrease endPoint=>startPoint
+    }
+
+    private void EndPointLockStateUpdate()
+    {
+        //decrease startPoint=>endPoint
+    }
+
+    private void LockOneSideNeibourSegmentStateUpdate()
+    {
+        //startPoint=prevSegm.end and endPoint=nextSeg.start
+        //1)startPoint=prevSegm.end
+        //2)lookAt end
+        //3)size Y == start,_next.Start lenght
+    }
+
+    private void FreeStateUpdate()
+    {
+        //decrease start=>end 
+        //position start=_prev.End
+        //Rotate around Start  lookat end
     }
 
     public void Init(RopeSegment nextSegment, Vector3 startPointCoordinate, float thickness, Rope rope)
@@ -59,28 +111,28 @@ public class RopeSegment : MonoBehaviour
         _startPointCoordinate = startPointCoordinate;
         _thickness = thickness;
         ChangeNextSegment(nextSegment);
-        transform.Rotate(90, 0, 0);
         //BarrierTouched += rope.SegmentDivision;
         //ReachedDeleatingState += rope.DeleteSegment;
 
-        //UpdateState();
+        UpdateState();
     }
 
     public void UpdateState()
     {
-        //RefreshPosition();
-        //RefreshLenght();
-        //RefreshRotation();
+        RefreshPosition();
+        RefreshRotation();
+        RefreshLenght();
+        
     }
 
     private void RefreshPosition()
     {
-
+        transform.position = new Vector3(_startPointCoordinate.x, transform.position.y, _startPointCoordinate.z);
     }
 
     private void RefreshLenght()
     {
-        float lenght = Vector3.Distance(_startPoint.transform.position, _endPoint.transform.position);
+        float lenght = Vector3.Distance(transform.position, _nextSegment.StartPointCoordinate);
 
         if (lenght > _minLenght)
         {
@@ -90,7 +142,7 @@ public class RopeSegment : MonoBehaviour
         {
             _lenght = _minLenght;
 
-            if (!_isBarrierTouch && !_startPointLock && !_endPointLock)
+            if (!_isBarrierTouch && !_isStartPointLock && !_isEndPointLock)
             {
                 //ReachedDeleatingState?.Invoke(this);
             }
@@ -101,6 +153,10 @@ public class RopeSegment : MonoBehaviour
 
     private void RefreshRotation()
     {
+        _angle = Vector3.Angle(Vector3.forward, _nextSegment.StartPointCoordinate - _startPointCoordinate);
+        float sign = Mathf.Sign(Vector3.Dot(Vector3.up, Vector3.Cross(Vector3.forward, _nextSegment.StartPointCoordinate - _startPointCoordinate)));
+        transform.eulerAngles = new Vector3(90,  _angle*sign, 0);
+        //Debug.Log(angle + " ");
     }
 
     public void ChangePreviousSegment(RopeSegment previousSegment)
@@ -111,7 +167,6 @@ public class RopeSegment : MonoBehaviour
     public void ChangeNextSegment(RopeSegment nextSegment)
     {
         _nextSegment = nextSegment;
-        //_fixedJoint.connectedBody = _nextSegment.GetComponent<Rigidbody>();
         _nextSegment.ChangePreviousSegment(this);
     }
 
