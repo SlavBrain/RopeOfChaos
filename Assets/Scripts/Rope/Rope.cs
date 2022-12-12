@@ -27,11 +27,11 @@ public class Rope : MonoBehaviour
         {
             RopeSegment newSegment = Instantiate(_ropeTemplate,dots[i],Quaternion.identity, transform).AddComponent<RopeSegment>();
             _segments.Add(newSegment);
-            newSegment.Init( _segments[i - 1], dots[i], _thickness,this);
+            newSegment.Init( _segments[i - 1],  _thickness,this);
         }
 
 
-        firstNewSegment.Init( _segments[_segments.Count - 1], dots[0], _thickness,this);
+        firstNewSegment.Init( _segments[_segments.Count - 1], _thickness,this);
     }
 
     public void SegmentDivision(RopeSegment oldSegment)

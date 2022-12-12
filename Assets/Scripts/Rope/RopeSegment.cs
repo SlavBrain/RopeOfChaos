@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class RopeSegment : MonoBehaviour
 {
-    [SerializeField] private const float _minLenght = 0.1f;
+    [SerializeField] private const float _minLenght = 0.4f;
+    [SerializeField] private float _decreasingSpeed = 1f;
     [SerializeField] private Vector3 _startPointCoordinate;
     [SerializeField] private EndSegmentDot _endPoint;
     [SerializeField] private RopeSegment _nextSegment;
@@ -22,11 +23,10 @@ public class RopeSegment : MonoBehaviour
     public event Action<RopeSegment> BarrierTouched;
     public event Action<RopeSegment> PreviousSegmentChanged;
     public event Action<RopeSegment> ReachedDeleatingState;
+
     public RopeSegment PreviousSegment => _previousSegment;
-
     public RopeSegment NextSegment => _nextSegment;
-
-    public Vector3 StartPointCoordinate => _startPointCoordinate;
+    public EndSegmentDot EndPoint => _endPoint;
 
     public bool IsBarrierTouch => _isBarrierTouch;
     public bool IsEndPointLock => _isEndPointLock;
@@ -39,41 +39,47 @@ public class RopeSegment : MonoBehaviour
 
     private void Update()
     {
-        if (_isBarrierTouch)
+        if (_previousSegment != null && _nextSegment != null)
         {
-            TouchingStateUpdate();
-        }
-        else if (_isStartPointLock || _isEndPointLock)
-        {
-            if (_isStartPointLock)
+            CheckNeibourSegments();
+
+            if (_isBarrierTouch)
             {
-                if (_isEndPointLock)
+                TouchingStateUpdate();
+            }
+            else if (_isStartPointLock || _isEndPointLock)
+            {
+                if (_isStartPointLock)
                 {
-                    LockAroundStateUpdate();
+                    if (_isEndPointLock)
+                    {
+                        LockAroundStateUpdate();
+                    }
+                    else
+                    {
+                        StartPointLockStateUpdate();
+                    }
                 }
                 else
                 {
-                    StartPointLockStateUpdate();
+                    EndPointLockStateUpdate();
                 }
+            }
+            else if (_nextSegment.IsEndPointLock || _previousSegment.IsStartPointLock)
+            {
+                LockOneSideNeibourSegmentStateUpdate();
             }
             else
             {
-                EndPointLockStateUpdate();
+                FreeStateUpdate();
             }
-        }
-        else if (_nextSegment.IsEndPointLock || _previousSegment.IsStartPointLock)
-        {
-            LockOneSideNeibourSegmentStateUpdate();
-        }
-        else
-        {
-            FreeStateUpdate();
         }
     }
 
     private void TouchingStateUpdate()
     {
-        //Divine and position Normal barrier
+        //DecreaseToStartPoint();
+
     }
 
     private void LockAroundStateUpdate()
@@ -84,55 +90,78 @@ public class RopeSegment : MonoBehaviour
     private void StartPointLockStateUpdate()
     {
         //decrease endPoint=>startPoint
+        DecreaseToStartPoint();
     }
 
     private void EndPointLockStateUpdate()
     {
         //decrease startPoint=>endPoint
+        DecreaseToEndPoint();
     }
 
     private void LockOneSideNeibourSegmentStateUpdate()
     {
-        //startPoint=prevSegm.end and endPoint=nextSeg.start
         //1)startPoint=prevSegm.end
+        transform.position = _previousSegment.EndPoint.transform.position;
         //2)lookAt end
+        SetDirectToEndPoint();
         //3)size Y == start,_next.Start lenght
+        transform.localScale = new Vector3(_thickness, Vector3.Distance(transform.position, _nextSegment.transform.position), _thickness);
     }
 
     private void FreeStateUpdate()
     {
         //decrease start=>end 
+        DecreaseToStartPoint();
         //position start=_prev.End
+        SetPosition();
         //Rotate around Start  lookat end
+        SetDirectToEndPoint();
     }
 
-    public void Init(RopeSegment nextSegment, Vector3 startPointCoordinate, float thickness, Rope rope)
+    public void Init(RopeSegment nextSegment, float thickness, Rope rope)
     {
-        _startPointCoordinate = startPointCoordinate;
         _thickness = thickness;
         ChangeNextSegment(nextSegment);
+        transform.Rotate(90, 0, 0);
         //BarrierTouched += rope.SegmentDivision;
         //ReachedDeleatingState += rope.DeleteSegment;
-
-        UpdateState();
     }
 
-    public void UpdateState()
+    private void CheckNeibourSegments()
     {
-        RefreshPosition();
-        RefreshRotation();
-        RefreshLenght();
-        
+        _isStartPointLock = _previousSegment.IsBarrierTouch;
+        _isEndPointLock = _nextSegment.IsBarrierTouch;
     }
 
-    private void RefreshPosition()
+    private void DecreaseToStartPoint()
     {
-        transform.position = new Vector3(_startPointCoordinate.x, transform.position.y, _startPointCoordinate.z);
+        _lenght = Mathf.MoveTowards(_lenght, _minLenght, Time.deltaTime * _decreasingSpeed);
+        transform.localScale = new Vector3(_thickness, _lenght, _thickness);
     }
 
-    private void RefreshLenght()
+    private void DecreaseToEndPoint()
     {
-        float lenght = Vector3.Distance(transform.position, _nextSegment.StartPointCoordinate);
+        DecreaseToStartPoint();
+        transform.position = new Vector3(transform.position.x + (_nextSegment.transform.position.x - _endPoint.transform.position.x),
+                                         transform.position.y,
+                                         transform.position.z + (_nextSegment.transform.position.z - _endPoint.transform.position.z));
+    }
+
+    private void SetDirectToEndPoint()
+    {
+        transform.LookAt(_nextSegment.transform.position);
+        transform.Rotate(90, 0, 0);
+    }
+
+    private void SetPosition()
+    {
+        transform.position = _previousSegment.EndPoint.transform.position;
+    }
+
+    private void ReCalculateLenght()
+    {
+        float lenght = Vector3.Distance(transform.position, _nextSegment.transform.position);
 
         if (lenght > _minLenght)
         {
@@ -151,13 +180,6 @@ public class RopeSegment : MonoBehaviour
         transform.localScale = new Vector3(_thickness, _lenght, _thickness);
     }
 
-    private void RefreshRotation()
-    {
-        _angle = Vector3.Angle(Vector3.forward, _nextSegment.StartPointCoordinate - _startPointCoordinate);
-        float sign = Mathf.Sign(Vector3.Dot(Vector3.up, Vector3.Cross(Vector3.forward, _nextSegment.StartPointCoordinate - _startPointCoordinate)));
-        transform.eulerAngles = new Vector3(90,  _angle*sign, 0);
-        //Debug.Log(angle + " ");
-    }
 
     public void ChangePreviousSegment(RopeSegment previousSegment)
     {
@@ -180,7 +202,7 @@ public class RopeSegment : MonoBehaviour
             {
                 BarrierTouched?.Invoke(this);
             }
-            
+
             _isBarrierTouch = true;
         }
     }
