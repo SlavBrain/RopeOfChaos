@@ -20,7 +20,7 @@ public class Rope : MonoBehaviour
 
     public void Init(Vector3[] dots)
     {
-        RopeSegment firstNewSegment = Instantiate(_ropeTemplate, transform).AddComponent<RopeSegment>();
+        RopeSegment firstNewSegment = Instantiate(_ropeTemplate, dots[0],Quaternion.identity,transform).AddComponent<RopeSegment>();
         _segments.Add(firstNewSegment);
 
         for (int i = 1; i < dots.Length; i++)
@@ -37,7 +37,8 @@ public class Rope : MonoBehaviour
     public void SegmentDivision(RopeSegment oldSegment)
     {
         Vector3 breakPoint = (oldSegment.transform.position + oldSegment.EndPoint.transform.position) / 2;
-        RopeSegment newSegment = AddNewSegment();
+        RopeSegment newSegment = Instantiate(_ropeTemplate, breakPoint, Quaternion.identity, transform).AddComponent<RopeSegment>();
+        _segments.Add(newSegment);
         newSegment.Init( oldSegment.NextSegment, _thickness,this);
         oldSegment.Init( newSegment, _thickness,this);
 
@@ -49,7 +50,7 @@ public class Rope : MonoBehaviour
         if (_segments.Count > _minSegmentsCount)
         {
             Debug.Log("delete");
-            segment.NextSegment.ChangePreviousSegment(segment.PreviousSegment);
+            segment.PreviousSegment.ChangeNextSegment(segment.NextSegment);
             //segment.PreviousSegment.ChangeNextSegment(segment.NextSegment);
             Destroy(segment.gameObject);
             //segment.gameObject.SetActive(false);

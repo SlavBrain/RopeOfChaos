@@ -72,17 +72,18 @@ public class RopeSegment : MonoBehaviour
             else
             {
                 FreeStateUpdate();
-            }
+
+                if (!_isBarrierTouch && !_isStartPointLock && !_isEndPointLock)
+                {
+                    ReachedDeleatingState?.Invoke(this);
+                }
+            }            
         }
     }
 
     private void TouchingStateUpdate()
     {
         DecreaseToStartPoint();
-        if (_lenght > _minLenght)
-        {
-            BarrierTouched?.Invoke(this);
-        }
     }
 
     private void LockAroundStateUpdate()
@@ -129,7 +130,7 @@ public class RopeSegment : MonoBehaviour
         transform.Rotate(90, 0, 0);
         ReCalculateLenght();
         BarrierTouched += rope.SegmentDivision;
-        //ReachedDeleatingState += rope.DeleteSegment;
+        ReachedDeleatingState += rope.DeleteSegment;
     }
 
     private void CheckNeibourSegments()
@@ -177,7 +178,7 @@ public class RopeSegment : MonoBehaviour
 
             if (!_isBarrierTouch && !_isStartPointLock && !_isEndPointLock)
             {
-                //ReachedDeleatingState?.Invoke(this);
+                ReachedDeleatingState?.Invoke(this);
             }
         }
 
