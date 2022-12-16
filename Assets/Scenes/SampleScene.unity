@@ -134,7 +134,11 @@ GameObject:
   - component: {fileID: 28832493}
   - component: {fileID: 28832492}
   - component: {fileID: 28832495}
+<<<<<<< HEAD
   - component: {fileID: 28832496}
+=======
+  - component: {fileID: 28832498}
+>>>>>>> parent of febac9b (obiRopeTest)
   m_Layer: 0
   m_Name: RopeCreator
   m_TagString: Untagged
@@ -284,10 +288,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+<<<<<<< HEAD
       - m_Target: {fileID: 28832496}
         m_TargetAssemblyTypeName: RopeCreator, Assembly-CSharp
         m_MethodName: CreateRope
         m_Mode: 1
+=======
+      - m_Target: {fileID: 28832498}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+>>>>>>> parent of febac9b (obiRopeTest)
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -305,12 +316,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 28832491}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< HEAD
   m_Script: {fileID: 11500000, guid: 904a163cdd0e63c4cbacfad2560c11e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _lineRenderer: {fileID: 28832492}
   _material: {fileID: 2100000, guid: 189732c736fdb544f98524f96c34aff6, type: 2}
   _cube: {fileID: 1915267858}
+=======
+  m_Script: {fileID: 11500000, guid: d44d49d539acdd74ca306077979439b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _segments: []
+  _minSegmentsCount: 50
+  _ropeTemplate: {fileID: 773329365954665029, guid: e93397dfebab32745b3e4fac2a6d63c9, type: 3}
+  _thickness: 0.4
+  _lineRenderer: {fileID: 28832492}
+  _dots: []
+>>>>>>> parent of febac9b (obiRopeTest)
 --- !u!1 &106592958
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,7 +553,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225842131}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.62, z: 11.01}
+  m_LocalPosition: {x: 0, y: 5.62, z: 0}
   m_LocalScale: {x: 1, y: 10, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -565,74 +588,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d423d0c9069de1c4aa1294f0ea5cc6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &537062474
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 537062477}
-  - component: {fileID: 537062476}
-  - component: {fileID: 537062475}
-  m_Layer: 0
-  m_Name: EventSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &537062475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 537062474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
---- !u!114 &537062476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 537062474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 10
---- !u!4 &537062477
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 537062474}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
